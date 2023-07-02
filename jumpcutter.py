@@ -39,8 +39,9 @@ def _is_valid_input_file(filename) -> bool:
     p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     outs, errs = None, None
     try:
-        outs, errs = p.communicate(timeout=0.1)
+        outs, errs = p.communicate(timeout=1)
     except subprocess.TimeoutExpired:
+        print("Timeout while checking the input file. Aborting.")
         p.kill()
         outs, errs = p.communicate()
     finally:
