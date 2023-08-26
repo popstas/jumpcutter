@@ -41,7 +41,6 @@ def _is_valid_input_file(filename) -> bool:
     try:
         outs, errs = p.communicate(timeout=1)
     except subprocess.TimeoutExpired:
-        print("Timeout while checking the input file. Aborting.")
         p.kill()
         outs, errs = p.communicate()
     finally:
@@ -291,11 +290,10 @@ if __name__ == '__main__':
 
     files = []
     for input_file in parser.parse_args().input_file:
-        if os.path.isfile(input_file) and _is_valid_input_file(input_file):
+        if os.path.isfile(input_file):
             files += [os.path.abspath(input_file)]
         elif os.path.isdir(input_file):
-            files += [os.path.join(input_file, file) for file in os.listdir(input_file)
-                      if _is_valid_input_file(os.path.join(input_file, file))]
+            files += [os.path.join(input_file, file) for file in os.listdir(input_file)]
 
     args = {k: v for k, v in vars(parser.parse_args()).items() if v is not None}
     del args['input_file']
@@ -305,6 +303,9 @@ if __name__ == '__main__':
     # It appears as though nested progress bars are deeply broken
     # with tqdm(files, unit='file') as progress_bar:
     for index, file in enumerate(files):
+        if not _is_valid_input_file(file):
+            print(f"Skipping file {index + 1}/{len(files)} '{os.path.basename(file)}' as it is not a valid input file.")
+            continue
         # progress_bar.set_description("Processing file '{}'".format(os.path.basename(file)))
         print(f"Processing file {index + 1}/{len(files)} '{os.path.basename(file)}'")
         local_options = dict(args)
