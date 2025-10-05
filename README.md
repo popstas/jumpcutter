@@ -1,5 +1,8 @@
+# talks-reducer
+I've forked this project at https://github.com/popstas/talks-reducer in October 2025
+
 # Jumpcutter
-Based on carykh's [jumpcutter](https://github.com/carykh/jumpcutter). It speeds up or slows down silent and louder parts of a video at different rates.
+Based on gegell's and carykh's [jumpcutter](https://github.com/carykh/jumpcutter). It speeds up or slows down silent and louder parts of a video at different rates.
 This version reduces the work done by him as there were a few locations to optimize:
 1) He exported every frame to the tempfolder to manually drop or copy frames. This was removed and replaced by an automatically generated ffmpeg filter. More exactly: the `setpts` with a binary tree for the local speedup and offset of the audio chunks (thus running in O(n log n) and therefore may still be able to be improved by more ffmpeg magic).
 2) During the time change of the audio he called `np.concatinate` on the wav output, which lead to array copies and thus performed poorly with longer videos. 
